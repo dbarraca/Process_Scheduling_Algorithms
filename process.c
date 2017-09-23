@@ -31,7 +31,6 @@ Proc **generateProcs(int numProc) {
    int procNdx = 0;
    Proc **procs = malloc(sizeof(Proc *) * numProc);
 
-   srand(seed);
 
    for (procNdx = 0; procNdx < numProc; procNdx++) {
       *(procs + procNdx) = randomProc(rand(), rand(), rand(), 'A' + procNdx);
@@ -49,12 +48,25 @@ Proc **removeProc(Proc **procs, int numProc, int rmvNdx) {
 
    return procsCopy;
 }
+
 void freeProcs(Proc **procs, int numProc) {
    int procNdx;
 
    for (procNdx = 0; procNdx < numProc; procNdx++) {
       free(*(procs + procNdx));
    }
+}
+
+Proc **copyProcs(Proc **procs, int numProc) {
+   int procNdx;
+   Proc **procsCopy = malloc(sizeof(Proc *) * numProc);
+
+   for(procNdx = 0; procNdx < numProc; procNdx++) {
+     *(procsCopy + procNdx) = malloc(sizeof(Proc));
+      memcpy(*(procsCopy + procNdx), *(procs + procNdx), sizeof(Proc));
+   }
+
+   return procsCopy;
 }
 
 void printProc(Proc *proc) {

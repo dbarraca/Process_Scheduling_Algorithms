@@ -25,12 +25,12 @@ int earlyArv(Proc **procs, int numProc, int quantum) {
 int shortExp(Proc **procs, int numProc, int quantum) {
    int procNdx = 0;
    float shortExp = QUANT_MAX;
-   int retNdx = TOT_PROCS;
+   int retNdx = -1;
 
    for (procNdx = 0; procNdx < numProc; procNdx++) {
-      Proc * curProc = *(procs + procNdx);
+      Proc *curProc = *(procs + procNdx);
 
-      if(quantum > curProc->arv && curProc->exp < shortExp) {
+      if(quantum >= curProc->arv && curProc->exp < shortExp) {
          retNdx = procNdx;
          shortExp = curProc->exp;
       }
@@ -39,30 +39,24 @@ int shortExp(Proc **procs, int numProc, int quantum) {
    return retNdx;
 }
 
-void FCFS(Proc **procs, int numProcs) {
-   int quantum, curNdx = -1;
+int shortRemain(Proc **procs, int numProc, int quantum) {
+   int procNdx = 0;
+   float shortRun = QUANT_MAX;
+   int retNdx = -1;
 
-   for (quantum = 0; quantum < QUANT_MAX; quantum++) {
-//      printf("%i\n", quantum);
-      if (curNdx > -1 && *(procs + curNdx) != NULL) {
-         ((Proc *) *(procs + curNdx))->run++;
-         if (((Proc *) *(procs + curNdx))->run >= ((Proc *) *(procs + curNdx))->exp) {
-            procs = removeProc(procs, numProcs, curNdx);
-            numProcs--;
+   for (procNdx = 0; procNdx < numProc; procNdx++) {
+      Proc *curProc = *(procs + procNdx);
 
-            curNdx = earlyArv(procs, numProcs, quantum);
-         }
-      }
-      else {
-         curNdx = earlyArv(procs, numProcs, quantum);
-      }
-
-      if(curNdx >= 0) {
-         printf("%c", ((Proc *) *(procs + curNdx))->name);
+      if(quantum >= curProc->arv && curProc->exp - curProc->run < shortRun) {
+         retNdx = procNdx;
+         shortRun = curProc->exp - curProc->run;
       }
    }
 
+   return retNdx;
 }
+
+
 /**
  * returns the processes in arrival time order with earliest first
  */

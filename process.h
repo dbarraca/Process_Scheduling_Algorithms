@@ -1,4 +1,3 @@
-#define TOT_PROCS 10
 #define QUANT_MAX 100
 
 /**
@@ -33,6 +32,12 @@ Proc **removeProc(Proc **procs, int numProc, int rmvNdx);
  * Free each process in the group of the given processes
  */
 void freeProcs(Proc **procs, int numProc);
+
+/**
+ * Return a pointer to a copy of all the given processes
+ *
+ */
+Proc **copyProcs(Proc **procs, int numProc);
 
 /**
  * Print arrival time, run time, and priority of the given process

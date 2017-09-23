@@ -9,10 +9,7 @@ int earlyArv(Proc **procs, int numProc, int quantum);
 
 int shortExp(Proc **procs, int numProc, int quantum);
 
-/*
- * First Come First Serve
- */
-void FCFS(Proc **procs, int numProc);
+int shortRemain(Proc **procs, int numProc, int quantum);
 
 /**
  * returns the processes in arrival time order with earliest first

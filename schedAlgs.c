@@ -1,49 +1,89 @@
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
+
 #include "process.h"
 #include "schedAlgs.h"
 
-/**
- * Finds index of process with earliest arrival time
- */
-int earliestArrival(Proc **procs, int numProc) {
-	int procIndex = 0;
-	float earliestArrivTime = 100;
-    int earliestIndex;
+int earlyArv(Proc **procs, int numProc, int quantum) {
+   int procNdx = 0;
+   float earlyArv = QUANT_MAX;
+   int retNdx = -1;
 
-	for (procIndex = 0; procIndex < numProc; procIndex++) {
-		Proc *currentProc = *(procs + procIndex);
+   for (procNdx = 0; procNdx < numProc; procNdx++) {
+      Proc *curProc = *(procs + procNdx);
 
-		if(currentProc->arrivalTime < earliestArrivTime) {
-			earliestIndex = procIndex;
-			earliestArrivTime = currentProc->arrivalTime;
-		}
-	}
+      if(quantum >= curProc->arv && curProc->arv < earlyArv) {
+         retNdx = procNdx;
+         earlyArv = curProc->arv;
+      }
+   }
 
-	return earliestIndex;
+   return retNdx;
 }
 
+int shortExp(Proc **procs, int numProc, int quantum) {
+   int procNdx = 0;
+   float shortExp = QUANT_MAX;
+   int retNdx = TOT_PROCS;
+
+   for (procNdx = 0; procNdx < numProc; procNdx++) {
+      Proc * curProc = *(procs + procNdx);
+
+      if(quantum > curProc->arv && curProc->exp < shortExp) {
+         retNdx = procNdx;
+         shortExp = curProc->exp;
+      }
+   }
+
+   return retNdx;
+}
+
+void FCFS(Proc **procs, int numProcs) {
+   int quantum, curNdx = -1;
+
+   for (quantum = 0; quantum < QUANT_MAX; quantum++) {
+//      printf("%i\n", quantum);
+      if (curNdx > -1 && *(procs + curNdx) != NULL) {
+         ((Proc *) *(procs + curNdx))->run++;
+         if (((Proc *) *(procs + curNdx))->run >= ((Proc *) *(procs + curNdx))->exp) {
+            procs = removeProc(procs, numProcs, curNdx);
+            numProcs--;
+
+            curNdx = earlyArv(procs, numProcs, quantum);
+         }
+      }
+      else {
+         curNdx = earlyArv(procs, numProcs, quantum);
+      }
+
+      if(curNdx >= 0) {
+         printf("%c", ((Proc *) *(procs + curNdx))->name);
+      }
+   }
+
+}
 /**
  * returns the processes in arrival time order with earliest first
  */
-Proc **arrivalOrder(Proc **procs, int numProc) {
-    Proc **orderedProcs = malloc(sizeof(Proc *) * numProc);
-    Proc **unorderedProcs = malloc(sizeof(Proc *) * numProc);
-    int numUnordered = numProc, retNumProc = 0, procIndex;
+Proc **orderProcs(Proc **procs, int numProc, int (*schedAlg)(Proc **, int)) {
+   Proc **orderedProcs = malloc(sizeof(Proc *) * numProc);
+   Proc **unorderedProcs = malloc(sizeof(Proc *) * numProc);
+   int numUnordered = numProc, retNumProc = 0, procNdx;
 
-    memcpy(unorderedProcs, procs, sizeof(Proc *) * numProc);
+   memcpy(unorderedProcs, procs, sizeof(Proc *) * numProc);
 
-    for(procIndex = 0; procIndex < numProc; procIndex++) {
-        *(orderedProcs + retNumProc) =
-         *(unorderedProcs + earliestArrival(unorderedProcs, numUnordered));
-        retNumProc++;
+   for(procNdx = 0; procNdx < numProc; procNdx++) {
+      *(orderedProcs + retNumProc) =
+       *(unorderedProcs + (*schedAlg)(unorderedProcs, numUnordered));
+      retNumProc++;
 
-        unorderedProcs = removeProc(unorderedProcs, numUnordered,
-         earliestArrival(unorderedProcs, numUnordered));
-        numUnordered--;
-    }
+      unorderedProcs = removeProc(unorderedProcs, numUnordered,
+       (*schedAlg)(unorderedProcs, numUnordered));
+      numUnordered--;
+   }
 
-    free(unorderedProcs);
+   free(unorderedProcs);
 
-    return orderedProcs;
+   return orderedProcs;
 }

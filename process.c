@@ -4,7 +4,7 @@
 
 #include "process.h"
 
-#define ARV_MAX 100
+#define ARV_MAX 20
 #define RUN_MAX 11
 #define PRI_MAX 5
 
@@ -22,12 +22,13 @@ Proc *randomProc(int arv, int run, int pri, char name){
    }
    proc->run = 0;
    proc->name = name;
+   proc->start = -1;
+   proc->end = -1;
 
    return proc;
 }
 
 Proc **generateProcs(int numProc) {
-   unsigned int seed = 0;
    int procNdx = 0;
    Proc **procs = malloc(sizeof(Proc *) * numProc);
 
@@ -55,6 +56,8 @@ void freeProcs(Proc **procs, int numProc) {
    for (procNdx = 0; procNdx < numProc; procNdx++) {
       free(*(procs + procNdx));
    }
+   free(procs);
+
 }
 
 Proc **copyProcs(Proc **procs, int numProc) {
@@ -71,8 +74,8 @@ Proc **copyProcs(Proc **procs, int numProc) {
 
 void printProc(Proc *proc) {
 
-   printf("%c   arv:%.0f   exp:%.0f   pri:%i\n", proc->name, proc->arv,
-      proc->exp, proc->pri);
+   printf("%c   arv:%.0f   exp:%.0f   pri:%i start:%i end:%i run:%f\n", proc->name, proc->arv,
+      proc->exp, proc->pri, proc->start, proc->end, proc->run);
 /*
   printf("arrival time  = %f\n", proc->arv);
   printf("run time  = %f\n", proc->exp);

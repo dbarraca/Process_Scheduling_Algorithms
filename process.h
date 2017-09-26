@@ -1,4 +1,9 @@
-#define QUANT_MAX 100
+#define TRUE 1
+#define FALSE 0
+#define TOT_PROCS 5
+#define QUANT_MAX 20
+#define TIME_SLICE 1
+
 
 /**
  An arrival time: a float value from 0 through 99 (measured in quanta).
@@ -11,6 +16,8 @@ typedef struct Proc{
    int pri;    //priority
    float run;    //current elapsed run time
    char name;    //name of process
+   int start;
+   int end;
 } Proc;
 
 /**

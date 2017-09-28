@@ -3,7 +3,7 @@
 #include <string.h>
 
 #include "process.h"
-#include "schedAlgs.h"
+#include "timeSchedAlgs.h"
 
 int earlyArv(Proc **procs, int numProc, int quantum) {
    int procNdx = 0;
@@ -56,10 +56,60 @@ int shortRemain(Proc **procs, int numProc, int quantum) {
    return retNdx;
 }
 
+void runAlg(Proc **procs, int numProcs, int preemp,
+ int (*nextProc)(Proc **procs, int numProc, int quantum)) {
+   int quantum, curNdx = -1;
 
-/**
- * returns the processes in arrival time order with earliest first
- */
+   for (quantum = 0; quantum < QUANT_MAX || curNdx >= 0; quantum++) { //count quanta
+//      printf(" %i", quantum);
+      if (curNdx >= 0) { //check for running process
+         (*(procs + curNdx))->run++; //increase running process run time
+
+         if ((*(procs + curNdx))->run >= (*(procs + curNdx))->exp) { //check run time
+
+            (*(procs + curNdx))->end = quantum;
+            procs = removeProc(procs, numProcs, curNdx); //remove finished process
+            numProcs--;
+
+            curNdx = (*nextProc)(procs, numProcs, quantum); //new running process
+         }
+         else if (preemp == TRUE) {
+            curNdx = changeCurrProc(procs, numProcs - 1, quantum, curNdx);
+         }
+      }
+      else {
+         curNdx = (*nextProc)(procs, numProcs, quantum); //replace running Proc
+
+      }
+
+      setProcStart(procs, curNdx, quantum);
+      printProcName(procs, curNdx);
+   }
+}
+
+void multipleRuns(int numProcs, int preemp, int numRuns,
+ int (*nextProc)(Proc **procs, int numProc, int quantum)) {
+
+   int seed = 1, run;
+   Proc **procs = NULL,
+    **allProcs = malloc(sizeof(Proc *) * numRuns * numProcs);
+
+   srand(seed);
+   for (run = 0; run < numRuns; run++) {
+      procs = generateProcs(TOT_PROCS);  //generate processes
+//      printProcs(procs, TOT_PROCS);  //print all generated processes
+      printf("RUN #%i ", run + 1);
+
+      runAlg(procs, TOT_PROCS, preemp, nextProc);
+      printf("\n");
+      memcpy(allProcs + run * numProcs, procs, sizeof(Proc *) * numProcs);
+      free(procs);
+   }
+
+   algStats(allProcs, NUM_RUNS * TOT_PROCS);
+   freeProcs(allProcs, NUM_RUNS * TOT_PROCS);
+}
+
 Proc **orderProcs(Proc **procs, int numProc, int (*schedAlg)(Proc **, int)) {
    Proc **orderedProcs = malloc(sizeof(Proc *) * numProc);
    Proc **unorderedProcs = malloc(sizeof(Proc *) * numProc);

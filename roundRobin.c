@@ -4,36 +4,13 @@
 
 #include "process.h"
 
-int possibleNextProc(Proc **procs, int numProc, int quantum, Proc *oldProc) {
-   int procNdx = 0;
-   float shortRun = QUANT_MAX;
-   int retNdx = -1;
 
-   for (procNdx = 0; procNdx < numProc; procNdx++) {
-      Proc *curProc = *(procs + procNdx);
-
-      if(quantum >= curProc->arv && curProc->exp - curProc->run < shortRun &&
-       oldProc->exp - oldProc->run < curProc->exp - curProc->run) {
-         retNdx = procNdx;
-         shortRun = curProc->exp - curProc->run;
-      }
-   }
-
-   return retNdx;
-}
-
-/*
- * Adds to the ready processes if there are any new processes that have arrived
- *  at the time of the given quantum.
- */
-Proc **checkArrived(Proc **procs, int numProcs, Proc ** readyProcs,
+Proc **readyProcs(Proc **procs, int numProcs, Proc ** readyProcs,
  int numReady, int quantum) {
-
    int procNdx, readyNdx, ready = FALSE;
    Proc *curProc, *curReadyProc, **retProcs = malloc(sizeof(Proc *) * numReady);
 
    memcpy(retProcs, readyProcs, sizeof(Proc *) * numReady);
-
 
    for (procNdx = 0; procNdx < numProcs; procNdx++) {
    curProc = *(procs + procNdx);
@@ -71,7 +48,6 @@ void roundRobin(int numProcs) {
    printProcs(procs, TOT_PROCS);  //print all generated processes
 
    for (quantum = 0; quantum < QUANT_MAX; quantum++) {
-
       printf("%c", ((Proc *) *(procs + curNdx))->name);
       ((Proc *) *(procs + curNdx))->run++;
 

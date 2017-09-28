@@ -50,6 +50,33 @@ Proc **removeProc(Proc **procs, int numProc, int rmvNdx) {
    return procsCopy;
 }
 
+int changeCurrProc(Proc **procs, int numProc, int quantum, int curNdx) {
+   int procNdx = 0;
+   float shortRun = QUANT_MAX;
+   int retNdx = curNdx;
+   Proc *oldProc = *(procs + curNdx);
+
+   if (curNdx > 0) {
+      for (procNdx = 0; procNdx < numProc; procNdx++) {
+         Proc *curProc = *(procs + procNdx);
+
+         if(quantum >= curProc->arv && curProc->exp - curProc->run < shortRun &&
+          oldProc->exp - oldProc->run < curProc->exp - curProc->run) {
+            retNdx = procNdx;
+            shortRun = curProc->exp - curProc->run;
+         }
+      }
+   }
+
+   return retNdx;
+}
+
+void setProcStart(Proc ** procs, int ndx, int quantum) {
+   if (ndx >= 0 && (*(procs + ndx))->start < 0) {
+      (*(procs + ndx))->start = quantum;
+   }
+}
+
 void freeProcs(Proc **procs, int numProc) {
    int procNdx;
 
@@ -74,13 +101,15 @@ Proc **copyProcs(Proc **procs, int numProc) {
 
 void printProc(Proc *proc) {
 
-   printf("%c   arv:%.0f   exp:%.0f   pri:%i start:%i end:%i run:%f\n", proc->name, proc->arv,
-      proc->exp, proc->pri, proc->start, proc->end, proc->run);
-/*
-  printf("arrival time  = %f\n", proc->arv);
-  printf("run time  = %f\n", proc->exp);
-  printf("priority  = %i\n\n", proc->pri);
-*/
+   printf("%c arv:%.0f exp:%.0f pri:%i start:%i end:%i run:%f\n",
+    proc->name, proc->arv, proc->exp, proc->pri, proc->start, proc->end,
+    proc->run);
+}
+
+void printProcName(Proc  **procs, int ndx) {
+    if (ndx >= 0) {
+       printf("%c", ((Proc *) *(procs + ndx))->name);
+    }
 }
 
 void printProcs(Proc **procs, int numProc) {

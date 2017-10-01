@@ -61,29 +61,30 @@ void runAlg(Proc **procs, int numProcs, int preemp,
    int quantum, curNdx = -1;
 
    for (quantum = 0; quantum < QUANT_MAX || curNdx >= 0; quantum++) { //count quanta
-//      printf(" %i", quantum);
+      printf("%i ", quantum);
       if (curNdx >= 0) { //check for running process
          (*(procs + curNdx))->run++; //increase running process run time
 
          if ((*(procs + curNdx))->run >= (*(procs + curNdx))->exp) { //check run time
 
-            (*(procs + curNdx))->end = quantum;
-            procs = removeProc(procs, numProcs, curNdx); //remove finished process
+            (*(procs + curNdx))->end = quantum; //mark end of process run
+            procs = removeProc(procs, numProcs, curNdx); //remove done process
             numProcs--;
-
-            curNdx = (*nextProc)(procs, numProcs, quantum); //new running process
+            if (quantum < QUANT_MAX)
+               curNdx = (*nextProc)(procs, numProcs, quantum); //run new process
+            else
+               curNdx = -1;
          }
-         else if (preemp == TRUE) {
-            curNdx = changeCurrProc(procs, numProcs - 1, quantum, curNdx);
-         }
+         else if (preemp == TRUE)  //check if preemptive
+            curNdx = changeCurrProc(procs, numProcs - 1, quantum, curNdx); //change running process
       }
       else {
-         curNdx = (*nextProc)(procs, numProcs, quantum); //replace running Proc
-
+         curNdx = (*nextProc)(procs, numProcs, quantum); //new running process
       }
 
-      setProcStart(procs, curNdx, quantum);
-      printProcName(procs, curNdx);
+      setProcStart(procs, curNdx, quantum); //mark start of process run
+      printProcName(procs, curNdx); //print processes name for time chart
+      printf("\n");
    }
 }
 
@@ -102,6 +103,7 @@ void multipleRuns(int numProcs, int preemp, int numRuns,
 
       runAlg(procs, TOT_PROCS, preemp, nextProc);
       printf("\n");
+      printProcs(procs, TOT_PROCS);  //print all generated processes
       memcpy(allProcs + run * numProcs, procs, sizeof(Proc *) * numProcs);
       free(procs);
    }

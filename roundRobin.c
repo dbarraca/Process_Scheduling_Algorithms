@@ -4,67 +4,65 @@
 
 #include "process.h"
 
+/**
+ * Find the index of the next process with arrival time past the given quantum.
+ * If the last processes is reached,start checking first process.
+ * If the original process is checked. end checking and return no ready process found, -1.
+ */
+int nextReadyProc(Proc **procs, int numProcs, int startNdx, int quantum) {
+   int nextReadyNdx = startNdx + 1, numChecked = 0;
 
-Proc **readyProcs(Proc **procs, int numProcs, Proc ** readyProcs,
- int numReady, int quantum) {
-   int procNdx, readyNdx, ready = FALSE;
-   Proc *curProc, *curReadyProc, **retProcs = malloc(sizeof(Proc *) * numReady);
-
-   memcpy(retProcs, readyProcs, sizeof(Proc *) * numReady);
-
-   for (procNdx = 0; procNdx < numProcs; procNdx++) {
-   curProc = *(procs + procNdx);
-      for (readyNdx = 0; readyNdx < numReady; readyNdx++) {
-         curReadyProc = *(retProcs + readyNdx);
-         if (curProc->name == curReadyProc->name) {
-            printf("proc was ready : %c\n", curProc->name);
-            ready = TRUE;
-         }
-      }
-
-      if (ready == FALSE && curProc->arv >= quantum) {
-          printf("proc was NOT ready : %c\n", curProc->name);
-
-         retProcs = realloc(retProcs, sizeof(Proc *) * (numReady + 1));
-         memcpy(retProcs, readyProcs, sizeof(Proc *) * numReady);
-         *(retProcs + numReady) = curProc;
-         printf("supposedly added proc : %c\n", ((Proc *) *(retProcs + numReady))->name);
-
-         numReady++;
-      }
-
-      ready = FALSE;
+   if (nextReadyNdx >= numProcs) {
+      nextReadyNdx = 0;
    }
 
-   return retProcs;
+   while ((*(procs + nextReadyNdx))->arv > quantum && numChecked < numProcs) {
+       numChecked++;
+       nextReadyNdx++;
+       if (nextReadyNdx >= numProcs) {
+          nextReadyNdx = 0;
+       }
+    }
+
+    if (numChecked >= numProcs)
+       nextReadyNdx = -1;
+
+    return nextReadyNdx;
 }
 
-void roundRobin(int numProcs) {
-   int seed = 1, quantum, sliceQuanta = 0, curNdx = 0;
+void roundRobin(Proc **procs, int numProcs) {
+   int quantum, sliceQuanta = 0, curNdx = 0;
+
+   for (quantum = 0; quantum < QUANT_MAX; quantum++) {
+
+      sliceQuanta++;
+      if (sliceQuanta >= TIME_SLICE) {
+         sliceQuanta = 0;
+         curNdx = curNdx < numProcs ? curNdx : 0;
+         curNdx = nextReadyProc(procs, numProcs, curNdx, quantum);
+      }
+
+      printf("%i ",quantum);
+      if (curNdx >= 0 && (*(procs + curNdx))->arv <= quantum) {
+         printf("%c", (*(procs + curNdx))->name);
+         (*(procs + curNdx))->run++;
+
+         if ((*(procs + curNdx))->run >= (*(procs + curNdx))->exp) {
+            procs = removeProc(procs, numProcs, curNdx);
+            numProcs--;
+         }
+      }
+      printf("\n");
+   }
+}
+
+void roundRobinRuns(int numProcs) {
+   int seed = 1;
    Proc **procs = NULL;
 
    srand(seed);
-   procs = generateProcs(TOT_PROCS);  //generate processes
-   printProcs(procs, TOT_PROCS);  //print all generated processes
+   procs = generateProcs(TOT_PROCS); //generate processes
+   printProcs(procs, TOT_PROCS); //print all generated processes
 
-   for (quantum = 0; quantum < QUANT_MAX; quantum++) {
-      printf("%c", ((Proc *) *(procs + curNdx))->name);
-      ((Proc *) *(procs + curNdx))->run++;
-
-      if (((Proc *) *(procs + curNdx))->run >=
-       ((Proc *) *(procs + curNdx))->exp) {
-         procs = removeProc(procs, numProcs, curNdx);
-         numProcs--;
-      }
-
-      sliceQuanta++;
-
-      if (sliceQuanta >= TIME_SLICE) {
-         sliceQuanta = 0;
-         curNdx++;
-         if (curNdx >= numProcs) {
-            curNdx = 0;
-         }
-      }
-   }
+   roundRobin(procs, TOT_PROCS);
 }

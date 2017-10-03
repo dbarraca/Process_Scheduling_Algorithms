@@ -61,6 +61,11 @@ void printProcName(Proc  **procs, int ndx);
 void printProcs(Proc **procs, int numProc);
 
 /**
+ * Print all process used for process scheduling algorithms
+ */
+void printAllProcs(int numProcs, int numRuns);
+
+/**
  * Returns index of next process with the shortest remaining run time
  */
 int changeCurrProc(Proc **procs, int numProc, int quantum, int curNdx);

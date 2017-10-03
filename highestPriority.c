@@ -66,7 +66,7 @@ void nonpreHighestPriority(Proc **procs, int numProcs) {
    //count quanta and continue if there is still a running process
    for (quantum = 0; (curProc != NULL && curProc->end < 0 && curProc->start > 0) ||
      numStarted > 0 || quantum < QUANT_MAX; quantum++) {
-      printf("%i ", quantum); //print current process
+//      printf("%i ", quantum); //print current process
       foundProc = FALSE; //set found available process flag to false
 
       if(numStarted > 0) { //check number of started processes
@@ -111,7 +111,8 @@ void nonpreHighestPriority(Proc **procs, int numProcs) {
             }
          }
       }
-      printf("\n");
+      printf(",");
+//      printf("\n");
    }
    free(priQueues); //free queues
 }
@@ -143,7 +144,7 @@ void preempHighestPriority(Proc **procs, int numProcs) {
    //count quanta and continue if there is still a running process
    for (quantum = 0; (curProc != NULL && curProc->end < 0 && curProc->start > 0) ||
      numStarted > 0 || quantum < QUANT_MAX; quantum++) {
-      printf("%i ", quantum); //print current process
+//      printf("%i ", quantum); //print current process
       foundProc = FALSE; //set found available process flag to false
 
       //iterate over queues until a available process is found
@@ -177,7 +178,8 @@ void preempHighestPriority(Proc **procs, int numProcs) {
             }
          }
       }
-      printf("\n");
+      printf(",");
+//      printf("\n");
    }
    free(priQueues); //free queues
 }
@@ -190,9 +192,9 @@ void HPFRuns(int numProcs, int preemp) {
    srand(seed);
 
    for (run = 0; run < NUM_RUNS; run++) {
-      printf("\nRUN %i   ", run + 1); //print run number
+      printf("\nRUN %i\n", run + 1); //print run number
       procs = generateProcs(TOT_PROCS); //generate processes
-      printProcs(procs, TOT_PROCS); //print all generated processes
+//      printProcs(procs, TOT_PROCS); //print all generated processes
       if (preemp == TRUE)
          preempHighestPriority(procs, TOT_PROCS); //run preemp HPF
       else

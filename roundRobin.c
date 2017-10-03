@@ -47,7 +47,7 @@ void roundRobin(Proc **procs, int numProcs) {
          setProcStart(procs, curNdx, quantum);
       }
 
-      printf(" %i ",quantum);
+//      printf(" %i ",quantum);
       if (curNdx >= 0 && (*(procs + curNdx))->arv <= quantum) {
 
          printf("%i", (*(procs + curNdx))->name);
@@ -58,7 +58,8 @@ void roundRobin(Proc **procs, int numProcs) {
             numProcs--;
          }
       }
-      printf("\n");
+      printf(",");
+//      printf("\n");
    }
 }
 
@@ -70,9 +71,9 @@ void roundRobinRuns(int numProcs) {
    srand(seed);
 
    for (run = 0; run < NUM_RUNS; run++) {
-      printf("RUN %i   ", run + 1);
+      printf("RUN %i\n", run + 1);
       procs = generateProcs(TOT_PROCS); //generate processes
-      printProcs(procs, TOT_PROCS); //print all generated processes
+//      printProcs(procs, TOT_PROCS); //print all generated processes
       roundRobin(procs, TOT_PROCS);
       algStats(procs, TOT_PROCS);
 //      printProcs(procs, TOT_PROCS); //print all generated processes

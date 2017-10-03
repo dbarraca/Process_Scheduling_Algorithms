@@ -12,22 +12,25 @@
 
 int main() {
 
-   printf("First Come First Serve\n");
+   printf("Processes used corresponding to each run of each algorithm.\n");
+   printAllProcs(TOT_PROCS,NUM_RUNS);
+
+   printf("\nFirst Come First Serve\n");
    multipleRuns(TOT_PROCS, FALSE, NUM_RUNS, earlyArv);
 
-   printf("Shortest Job Time\n");
+   printf("\nShortest Job Time\n");
    multipleRuns(TOT_PROCS, FALSE, NUM_RUNS, shortExp);
 
-   printf("Shortest Remaining Time\n");
+   printf("\nShortest Remaining Time\n");
    multipleRuns(TOT_PROCS, TRUE, NUM_RUNS, shortRemain);
 
-   printf("Round Robin\n");
+   printf("\nRound Robin\n");
    roundRobinRuns(TOT_PROCS);
 
-   printf("Non-Preemptive Highest Priority");
+   printf("\nNon-Preemptive Highest Priority");
    HPFRuns(TOT_PROCS, FALSE);
 
-   printf("Preemptive Highest Priority");
+   printf("\nPreemptive Highest Priority");
    HPFRuns(TOT_PROCS, TRUE);
 
    return 0;

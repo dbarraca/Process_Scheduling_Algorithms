@@ -117,3 +117,17 @@ void printProcs(Proc **procs, int numProc) {
    }
    printf("\n");
 }
+
+void printAllProcs(int numProcs, int numRuns) {
+   int seed = 1, run;
+   Proc **procs = NULL;
+
+   srand(seed);
+   for (run = 0; run < numRuns; run++) {
+      printf("RUN %i  \n", run + 1);
+      procs = generateProcs(TOT_PROCS);  //generate processes
+      printProcs(procs, TOT_PROCS);  //print all generated processes
+      free(procs);
+//      freeProcs(procs, numProcs);
+   }
+}

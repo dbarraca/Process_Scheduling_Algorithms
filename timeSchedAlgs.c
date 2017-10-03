@@ -61,7 +61,7 @@ void runAlg(Proc **procs, int numProcs, int preemp,
    int quantum, curNdx = -1, numStarted = 0;
 
    for (quantum = 0; (quantum < QUANT_MAX || curNdx >= 0)  && numProcs > 0; quantum++) { //count quanta
-      printf("%i ", quantum);
+//      printf("%i ", quantum);
       if (curNdx >= 0) { //check for running process
          (*(procs + curNdx))->run++; //increase running process run time
 
@@ -87,7 +87,8 @@ void runAlg(Proc **procs, int numProcs, int preemp,
          numStarted++;
       setProcStart(procs, curNdx, quantum); //mark start of process run
       printProcName(procs, curNdx); //print processes name for time chart
-      printf("\n");
+      printf(",");
+//      printf("\n");
    }
 }
 
@@ -100,9 +101,9 @@ void multipleRuns(int numProcs, int preemp, int numRuns,
 
    srand(seed);
    for (run = 0; run < numRuns; run++) {
-      printf("RUN %i  \n", run + 1);
+      printf("RUN %i\n", run + 1);
       procs = generateProcs(TOT_PROCS);  //generate processes
-      printProcs(procs, TOT_PROCS);  //print all generated processes
+//      printProcs(procs, TOT_PROCS);  //print all generated processes
       runAlg(procs, TOT_PROCS, preemp, nextProc);
       algStats(procs, TOT_PROCS);
       printf("\n");

@@ -56,7 +56,6 @@ float avgResponseTime(Proc **procs, int numProcs) {
 float calcThroughput(Proc **procs, int numProcs) {
    int procNdx, numFinished = 0;;
    int highestQuanta = 0;
-   float runTime = 0;
 
    for (procNdx = 0; procNdx < numProcs; procNdx++) {
       if ((*(procs + procNdx))->end >= 0) 
@@ -74,6 +73,6 @@ void algStats(Proc **procs, int numProcs) {
    printf("turnaround time : %f\n", avgTurnaroundTime(procs, numProcs));
    printf("wait time : %f\n", avgWaitTime(procs, numProcs));
    printf("response time: %f\n", avgResponseTime(procs, numProcs));
-   printf("throughput: %f\n\n", calcThroughput(procs, numProcs));
+   printf("throughput: %f\n", calcThroughput(procs, numProcs));
 
 }

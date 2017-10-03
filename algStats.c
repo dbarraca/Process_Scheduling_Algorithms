@@ -32,7 +32,7 @@ float avgTurnaroundTime(Proc **procs, int numProcs) {
    float sum = 0;
 
    for (procNdx = 0; procNdx < numProcs; procNdx++) {
-      if ((*(procs + procNdx))->start > 0) {
+      if ((*(procs + procNdx))->start > 0/* && (*(procs + procNdx))->end > 0*/) {
          sum += ((*(procs + procNdx))->end - (*(procs + procNdx))->arv);
          numFinished++;
       }
@@ -41,10 +41,23 @@ float avgTurnaroundTime(Proc **procs, int numProcs) {
    return sum / numFinished;
 }
 
-void algStats(Proc **procs, int numProcs) {
+float throughput(Proc **procs, int numProcs) {
+   int procNdx, numFinished = 0;;
+   float runTime = 0;
 
-   printf("run time : %f \n", avgRunTime(procs, numProcs));
-   printf("wait time : %f \n", avgWaitTime(procs, numProcs));
-   printf("turnaround time : %f \n", avgTurnaroundTime(procs, numProcs));
+   for (procNdx = 0; procNdx < numProcs; procNdx++) {
+      runTime += ((*(procs + procNdx))->run);
+      numFinished++;
+   }
+
+   return numFinished / runTime;
+}
+
+void algStats(Proc **procs, int numProcs) {
+   printf("\n");
+   printf("run time : %f\n", avgRunTime(procs, numProcs));
+   printf("wait time : %f\n", avgWaitTime(procs, numProcs));
+   printf("turnaround time : %f\n", avgTurnaroundTime(procs, numProcs));
+   printf("throughput: %f\n\n", throughput(procs, numProcs));
 
 }

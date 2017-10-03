@@ -4,11 +4,9 @@
 
 #include "process.h"
 
-#define ARV_MAX 20
-#define RUN_MAX 11
-#define PRI_MAX 5
 
-Proc *randomProc(int arv, int run, int pri, char name){
+
+Proc *randomProc(int arv, int run, int pri, int name){
    Proc *proc = malloc(sizeof(Proc));
 
    proc->arv = arv % ARV_MAX;
@@ -34,7 +32,7 @@ Proc **generateProcs(int numProc) {
 
 
    for (procNdx = 0; procNdx < numProc; procNdx++) {
-      *(procs + procNdx) = randomProc(rand(), rand(), rand(), 'A' + procNdx);
+      *(procs + procNdx) = randomProc(rand(), rand(), rand(), procNdx);
    }
 
    return procs;
@@ -101,14 +99,13 @@ Proc **copyProcs(Proc **procs, int numProc) {
 
 void printProc(Proc *proc) {
 
-   printf("%c arv:%.0f exp:%.0f pri:%i start:%i end:%i run:%f\n",
-    proc->name, proc->arv, proc->exp, proc->pri, proc->start, proc->end,
-    proc->run);
+   printf("Name: %i   arrival:%.0f   expected run:%.0f   priority:%i\n",
+    proc->name, proc->arv, proc->exp, proc->pri);
 }
 
 void printProcName(Proc  **procs, int ndx) {
     if (ndx >= 0) {
-       printf("%c", ((Proc *) *(procs + ndx))->name);
+       printf("%i", (*(procs + ndx))->name);
     }
 }
 

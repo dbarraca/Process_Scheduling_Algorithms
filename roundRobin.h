@@ -1,9 +1,13 @@
 /**
- * Adds to the ready processes if there are any new processes that have
- * arrived at the time of the given quantum.
+ * Returns the index to the next ready process.
  */
-//Proc **readyProcs(Proc **procs, int numProcs, Proc ** readyProcs,
-// int numReady, int quantum);
-Proc **readyProcs(Proc **procs, int numProcs, int quantum);
 int nextReadyProc(Proc **procs, int numProcs, int startNdx, int quantum);
+/**
+ * Round Robin PRocess SCheduling Algorithm.
+ */
+void roundRobin(Proc **procs, int numProcs);
+
+/**
+ * Multiple runs of the Round Robin PRocess SCheduling Algorithm.
+ */
 void roundRobinRuns(int numProcs);

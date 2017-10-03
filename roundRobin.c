@@ -3,6 +3,7 @@
 #include <string.h>
 
 #include "process.h"
+#include "algStats.h"
 
 /**
  * Find the index of the next process with arrival time past the given quantum.
@@ -16,9 +17,11 @@ int nextReadyProc(Proc **procs, int numProcs, int startNdx, int quantum) {
       nextReadyNdx = 0;
    }
 
-   while ((*(procs + nextReadyNdx))->arv > quantum && numChecked < numProcs) {
+   while (((quantum > QUANT_MAX && (*(procs + nextReadyNdx))->start < 0)
+    || (*(procs + nextReadyNdx))->arv > quantum) && numChecked < numProcs) {
        numChecked++;
        nextReadyNdx++;
+
        if (nextReadyNdx >= numProcs) {
           nextReadyNdx = 0;
        }
@@ -33,21 +36,24 @@ int nextReadyProc(Proc **procs, int numProcs, int startNdx, int quantum) {
 void roundRobin(Proc **procs, int numProcs) {
    int quantum, sliceQuanta = 0, curNdx = 0;
 
-   for (quantum = 0; quantum < QUANT_MAX; quantum++) {
+   for (quantum = 0; (quantum < QUANT_MAX || curNdx >= 0)
+   && numProcs > 0; quantum++) {
 
       sliceQuanta++;
       if (sliceQuanta >= TIME_SLICE) {
          sliceQuanta = 0;
          curNdx = curNdx < numProcs ? curNdx : 0;
          curNdx = nextReadyProc(procs, numProcs, curNdx, quantum);
+         setProcStart(procs, curNdx, quantum);
       }
 
-      printf("%i ",quantum);
+      printf(" %i ",quantum);
       if (curNdx >= 0 && (*(procs + curNdx))->arv <= quantum) {
-         printf("%c", (*(procs + curNdx))->name);
-         (*(procs + curNdx))->run++;
 
+         printf("%i", (*(procs + curNdx))->name);
+         (*(procs + curNdx))->run++;
          if ((*(procs + curNdx))->run >= (*(procs + curNdx))->exp) {
+            (*(procs + curNdx))->end = quantum;
             procs = removeProc(procs, numProcs, curNdx);
             numProcs--;
          }
@@ -57,12 +63,24 @@ void roundRobin(Proc **procs, int numProcs) {
 }
 
 void roundRobinRuns(int numProcs) {
-   int seed = 1;
-   Proc **procs = NULL;
+   int seed = 1, run;
+   Proc **procs = NULL,
+    **allProcs = malloc(sizeof(Proc *) * NUM_RUNS * numProcs);
 
    srand(seed);
-   procs = generateProcs(TOT_PROCS); //generate processes
-   printProcs(procs, TOT_PROCS); //print all generated processes
 
-   roundRobin(procs, TOT_PROCS);
+   for (run = 0; run < NUM_RUNS; run++) {
+      printf("RUN %i   ", run + 1);
+      procs = generateProcs(TOT_PROCS); //generate processes
+      printProcs(procs, TOT_PROCS); //print all generated processes
+      roundRobin(procs, TOT_PROCS);
+//      printProcs(procs, TOT_PROCS); //print all generated processes
+      memcpy(allProcs + run * numProcs, procs, sizeof(Proc *) * numProcs);
+      free(procs);
+      printf("\n");
+   }
+
+
+   algStats(allProcs, NUM_RUNS * TOT_PROCS);
+   freeProcs(allProcs, NUM_RUNS * TOT_PROCS);
 }

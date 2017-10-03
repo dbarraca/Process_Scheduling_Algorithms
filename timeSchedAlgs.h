@@ -31,4 +31,4 @@ void multipleRuns(int numProcs, int preemp, int numRuns,
  * Returns the processes in arrival time order with earliest first
  */
 Proc **orderProcs(Proc **procs, int numProc,
- int (*schedAlg)(Proc **, int));
+ int (*schedAlg)(Proc **, int, int));

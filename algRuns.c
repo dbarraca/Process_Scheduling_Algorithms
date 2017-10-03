@@ -5,23 +5,30 @@
 #include "process.h"
 #include "timeSchedAlgs.h"
 #include "roundRobin.h"
+#include "highestPriority.h"
 
 #define TRUE 1
 #define FALSE 0
 
 int main() {
-/*   printf("First Come First Serve\n");
+
+   printf("First Come First Serve\n");
    multipleRuns(TOT_PROCS, FALSE, NUM_RUNS, earlyArv);
 
-   printf("\nShortest Job Time\n");
+   printf("Shortest Job Time\n");
    multipleRuns(TOT_PROCS, FALSE, NUM_RUNS, shortExp);
 
-   printf("\nShortest Remaining Time\n");
+   printf("Shortest Remaining Time\n");
    multipleRuns(TOT_PROCS, TRUE, NUM_RUNS, shortRemain);
-*/
 
-   printf("Round Robin\n\n");
+   printf("Round Robin\n");
    roundRobinRuns(TOT_PROCS);
+
+   printf("Non-Preemptive Highest Priority");
+   HPFRuns(TOT_PROCS, FALSE);
+
+   printf("Preemptive Highest Priority");
+   HPFRuns(TOT_PROCS, TRUE);
 
    return 0;
 }

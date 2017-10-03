@@ -74,6 +74,7 @@ void roundRobinRuns(int numProcs) {
       procs = generateProcs(TOT_PROCS); //generate processes
       printProcs(procs, TOT_PROCS); //print all generated processes
       roundRobin(procs, TOT_PROCS);
+      algStats(procs, TOT_PROCS);
 //      printProcs(procs, TOT_PROCS); //print all generated processes
       memcpy(allProcs + run * numProcs, procs, sizeof(Proc *) * numProcs);
       free(procs);

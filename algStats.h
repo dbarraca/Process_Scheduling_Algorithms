@@ -16,7 +16,7 @@ float avgTurnaroundTime(Proc **procs, int numProcs);
 /**
  * Returns the throguhput of the process scheduling algorithm.
  */
-float throughput(Proc **procs, int numProcs);
+float calcThroughput(Proc **procs, int numProcs);
 
 /**
  * Prints statistics on the Process Scheduling Algorithm runs.

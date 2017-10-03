@@ -60,7 +60,7 @@ void runAlg(Proc **procs, int numProcs, int preemp,
  int (*nextProc)(Proc **procs, int numProc, int quantum)) {
    int quantum, curNdx = -1, numStarted = 0;
 
-   for (quantum = 0; quantum < QUANT_MAX || curNdx >= 0 || numStarted > 0; quantum++) { //count quanta
+   for (quantum = 0; (quantum < QUANT_MAX || curNdx >= 0)  && numProcs > 0; quantum++) { //count quanta
       printf("%i ", quantum);
       if (curNdx >= 0) { //check for running process
          (*(procs + curNdx))->run++; //increase running process run time
@@ -80,6 +80,8 @@ void runAlg(Proc **procs, int numProcs, int preemp,
       }
       else {
          curNdx = (*nextProc)(procs, numProcs, quantum); //new running process
+         if(curNdx >= 0)
+            (*(procs + curNdx))->run++; //increase running process run time
       }
       if(curNdx > 0 && (*(procs + curNdx))->start < 0)
          numStarted++;
@@ -102,6 +104,7 @@ void multipleRuns(int numProcs, int preemp, int numRuns,
       procs = generateProcs(TOT_PROCS);  //generate processes
       printProcs(procs, TOT_PROCS);  //print all generated processes
       runAlg(procs, TOT_PROCS, preemp, nextProc);
+      algStats(procs, TOT_PROCS);
       printf("\n");
     //  printProcs(procs, TOT_PROCS);  //print all generated processes
       memcpy(allProcs + run * numProcs, procs, sizeof(Proc *) * numProcs);

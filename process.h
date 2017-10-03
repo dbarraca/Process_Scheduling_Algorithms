@@ -1,6 +1,6 @@
 #define TRUE 1
 #define FALSE 0
-#define TOT_PROCS 150
+#define TOT_PROCS 50
 #define QUANT_MAX 100
 #define TIME_SLICE 1
 #define NUM_RUNS 5

@@ -50,16 +50,16 @@ Proc **removeProc(Proc **procs, int numProc, int rmvNdx) {
 
 int changeCurrProc(Proc **procs, int numProc, int quantum, int curNdx) {
    int procNdx = 0;
-   float shortRun = QUANT_MAX;
    int retNdx = curNdx;
    Proc *oldProc = *(procs + curNdx);
+   float shortRun = oldProc->exp - oldProc->run;
 
-   if (curNdx > 0) {
+   if (curNdx >= 0) {
       for (procNdx = 0; procNdx < numProc; procNdx++) {
          Proc *curProc = *(procs + procNdx);
 
          if(quantum >= curProc->arv && curProc->exp - curProc->run < shortRun &&
-          oldProc->exp - oldProc->run < curProc->exp - curProc->run) {
+          oldProc->exp - oldProc->run > curProc->exp - curProc->run) {
             retNdx = procNdx;
             shortRun = curProc->exp - curProc->run;
          }

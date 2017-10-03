@@ -10,50 +10,55 @@
 int countPriority(Proc **procs, int numProcs, int priority) {
    int ndx, numPriorProcs = 0;
 
-   for (ndx = 0; ndx < numProcs;  ndx++) {
-      if ((*(procs + ndx))->pri == priority) {
-         numPriorProcs++;
+   for (ndx = 0; ndx < numProcs;  ndx++) { // loop through processes
+      if ((*(procs + ndx))->pri == priority) { //check if process is priority
+         numPriorProcs++; //increment number of process of priority
       }
    }
 
-   return numPriorProcs;
+   return numPriorProcs; //return number of processes of the priority
 }
 
 int *countAllPriority(Proc **procs, int numProcs) {
    int curPri, *priorities = malloc(sizeof(int) * (PRI_MAX - 1));
 
-   for(curPri = 1; curPri < PRI_MAX; curPri++) {
+   for(curPri = 1; curPri < PRI_MAX; curPri++) { // loop through priority
+      //set count of processes of specified priority
       priorities[curPri - 1] = countPriority(procs, numProcs, curPri);
    }
-   return priorities;
+
+   return priorities; //return array of number of each priority
 }
 
 Proc **priorityProcs(Proc **procs, int numProcs, int priority) {
    Proc **retProcs = NULL;
    int ndx, numPriorProcs = countPriority(procs, numProcs, priority);
 
-   //printf("numPriorProcs %i\n", numPriorProcs);
-   retProcs  = malloc(sizeof(Proc *) * numPriorProcs);
+   retProcs  = malloc(sizeof(Proc *) * numPriorProcs); //pointer to processes
 
-   for (ndx = 0; ndx < numProcs;  ndx++) {
+   for (ndx = 0; ndx < numProcs;  ndx++) { //loop through processes
+      //check if process is correct prioirity
       if ((*(procs + ndx))->pri == priority) {
+         //copy process
          memcpy(retProcs + --numPriorProcs, procs + ndx, sizeof(Proc *));
       }
    }
 
-   return retProcs;
+   return retProcs ;//return processes of specified priority
 }
 
 Proc ***priorityQueues(Proc **procs, int numProcs) {
    Proc ***priorityQueues = malloc(sizeof(Proc **) * PRI_MAX - 1);
    int curPri;
-   for (curPri = 1; curPri < PRI_MAX; curPri++) {
+
+   for (curPri = 1; curPri < PRI_MAX; curPri++) { // loop through priority
+      //places process of priority in arrival order
       *(priorityQueues + curPri - 1) =
        orderProcs(priorityProcs(procs, numProcs, curPri),
        countPriority(procs, numProcs, curPri), earlyArv);
    }
 
-   return priorityQueues;
+   return priorityQueues; //return priority queues
 }
 
 

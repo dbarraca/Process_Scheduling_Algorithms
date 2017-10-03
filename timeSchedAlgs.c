@@ -10,16 +10,17 @@ int earlyArv(Proc **procs, int numProc, int quantum) {
    float earlyArv = QUANT_MAX;
    int retNdx = -1;
 
-   for (procNdx = 0; procNdx < numProc; procNdx++) {
-      Proc *curProc = *(procs + procNdx);
+   for (procNdx = 0; procNdx < numProc; procNdx++) { //loop through processes
+      Proc *curProc = *(procs + procNdx); //get current process
 
+      //check if process is ready and if it is earliest
       if(quantum >= curProc->arv && curProc->arv < earlyArv) {
-         retNdx = procNdx;
-         earlyArv = curProc->arv;
+         retNdx = procNdx; //change return index
+         earlyArv = curProc->arv; //get process arrival time
       }
    }
 
-   return retNdx;
+   return retNdx; //return index of earliest process
 }
 
 int shortExp(Proc **procs, int numProc, int quantum) {
@@ -27,16 +28,17 @@ int shortExp(Proc **procs, int numProc, int quantum) {
    float shortExp = QUANT_MAX;
    int retNdx = -1;
 
-   for (procNdx = 0; procNdx < numProc; procNdx++) {
-      Proc *curProc = *(procs + procNdx);
+   for (procNdx = 0; procNdx < numProc; procNdx++) { //loop through processes
+      Proc *curProc = *(procs + procNdx); //get current process
 
+      //check if process is ready and if it is has shortest expected run time
       if(quantum >= curProc->arv && curProc->exp < shortExp) {
-         retNdx = procNdx;
-         shortExp = curProc->exp;
+         retNdx = procNdx; //change return index
+         shortExp = curProc->exp;//get process expected run time time
       }
    }
 
-   return retNdx;
+   return retNdx; //return index of process with shortest expected run time
 }
 
 int shortRemain(Proc **procs, int numProc, int quantum) {
@@ -44,16 +46,17 @@ int shortRemain(Proc **procs, int numProc, int quantum) {
    float shortRun = QUANT_MAX;
    int retNdx = -1;
 
-   for (procNdx = 0; procNdx < numProc; procNdx++) {
-      Proc *curProc = *(procs + procNdx);
+   for (procNdx = 0; procNdx < numProc; procNdx++) { //loop through processes
+      Proc *curProc = *(procs + procNdx); //get current process
 
+      //check if process is ready and if it is has shortest expected run time
       if(quantum >= curProc->arv && curProc->exp - curProc->run < shortRun) {
-         retNdx = procNdx;
-         shortRun = curProc->exp - curProc->run;
+         retNdx = procNdx; //change return index
+         shortRun = curProc->exp - curProc->run;;//get process remaining time
       }
    }
 
-   return retNdx;
+   return retNdx;//return index of process with shortest remaining run time
 }
 
 void runAlg(Proc **procs, int numProcs, int preemp,
@@ -94,14 +97,13 @@ void runAlg(Proc **procs, int numProcs, int preemp,
 
 void multipleRuns(int numProcs, int preemp, int numRuns,
  int (*nextProc)(Proc **procs, int numProc, int quantum)) {
-
    int seed = 1, run;
    Proc **procs = NULL,
     **allProcs = malloc(sizeof(Proc *) * numRuns * numProcs);
 
    srand(seed);
-   for (run = 0; run < numRuns; run++) {
-      printf("RUN %i\n", run + 1);
+   for (run = 0; run < numRuns; run++) { //loop through runs
+      printf("RUN %i\n", run + 1); //print run number
       procs = generateProcs(TOT_PROCS);  //generate processes
 //      printProcs(procs, TOT_PROCS);  //print all generated processes
       runAlg(procs, TOT_PROCS, preemp, nextProc);
@@ -109,11 +111,11 @@ void multipleRuns(int numProcs, int preemp, int numRuns,
       printf("\n");
     //  printProcs(procs, TOT_PROCS);  //print all generated processes
       memcpy(allProcs + run * numProcs, procs, sizeof(Proc *) * numProcs);
-      free(procs);
+      free(procs); // free pointer to process
    }
 
-   algStats(allProcs, NUM_RUNS * TOT_PROCS);
-   freeProcs(allProcs, NUM_RUNS * TOT_PROCS);
+   algStats(allProcs, NUM_RUNS * TOT_PROCS); // print statistics on algorithm
+   freeProcs(allProcs, NUM_RUNS * TOT_PROCS); // fre al process
 }
 
 Proc **orderProcs(Proc **procs, int numProc, int (*schedAlg)(Proc **, int, int)) {
@@ -121,19 +123,21 @@ Proc **orderProcs(Proc **procs, int numProc, int (*schedAlg)(Proc **, int, int))
    Proc **unorderedProcs = malloc(sizeof(Proc *) * numProc);
    int numUnordered = numProc, retNumProc = 0, procNdx;
 
-   memcpy(unorderedProcs, procs, sizeof(Proc *) * numProc);
+   memcpy(unorderedProcs, procs, sizeof(Proc *) * numProc); // copy processes
 
-   for(procNdx = 0; procNdx < numProc; procNdx++) {
+   for(procNdx = 0; procNdx < numProc; procNdx++) { //loop through process
+      //set next ordered process
       *(orderedProcs + retNumProc) =
        *(unorderedProcs + (*schedAlg)(unorderedProcs, numUnordered, QUANT_MAX));
       retNumProc++;
 
+      //remove process from unordered processes
       unorderedProcs = removeProc(unorderedProcs, numUnordered,
        (*schedAlg)(unorderedProcs, numUnordered, QUANT_MAX));
-      numUnordered--;
+      numUnordered--; //decrement number of unordered processes
    }
 
-   free(unorderedProcs);
+   free(unorderedProcs); // free pointer
 
-   return orderedProcs;
+   return orderedProcs; // return ordered processes
 }
